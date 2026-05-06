@@ -38,12 +38,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect authenticated users away from auth pages
-  if (
-    user &&
-    (nextUrl.pathname === '/login' || nextUrl.pathname === '/signup')
-  ) {
-    return NextResponse.redirect(new URL('/admin', request.url))
+  // Redirect authenticated users away from auth pages — honor ?redirectTo
+  if (user && (nextUrl.pathname === '/login' || nextUrl.pathname === '/signup')) {
+    const redirectTo = nextUrl.searchParams.get('redirectTo')
+    const dest = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/admin'
+    return NextResponse.redirect(new URL(dest, request.url))
   }
 
   return supabaseResponse
