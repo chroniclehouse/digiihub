@@ -20,7 +20,7 @@ export async function getOrgSpeakersBySlug(orgSlug: string): Promise<Speaker[]> 
     .eq('status', 'active')
     .order('full_name')
 
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return (data ?? []) as Speaker[]
 }
 
@@ -33,7 +33,7 @@ export async function getAdminOrgSpeakers(orgId: string): Promise<Speaker[]> {
     .eq('organization_id', orgId)
     .order('full_name')
 
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return (data ?? []) as Speaker[]
 }
 
@@ -58,7 +58,7 @@ export async function createSpeaker(orgId: string, input: SpeakerInput): Promise
     .select()
     .single()
 
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return data as Speaker
 }
 
@@ -72,7 +72,7 @@ export async function updateSpeaker(id: string, input: Partial<SpeakerInput>): P
     .select()
     .single()
 
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return data as Speaker
 }
 
@@ -84,5 +84,5 @@ export async function archiveSpeaker(id: string): Promise<void> {
     .update({ status: 'archived' })
     .eq('id', id)
 
-  if (error) throw error
+  if (error) throw new Error(error.message)
 }
