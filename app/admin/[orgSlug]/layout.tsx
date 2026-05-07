@@ -38,6 +38,7 @@ export default async function AdminOrgLayout({ children, params }: AdminOrgLayou
   const navLinks = [
     { href: `/admin/${orgSlug}`, label: 'Dashboard' },
     { href: `/admin/${orgSlug}/speakers`, label: 'Speakers' },
+    { href: `/admin/${orgSlug}/sessions`, label: 'Sessions' },
   ]
 
   return (

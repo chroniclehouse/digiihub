@@ -6,7 +6,11 @@ export const HUB_SECTIONS = [
     slug: 'speakers',
     description: 'Meet the people leading this program.',
   },
-  // { label: 'Sessions', slug: 'sessions', description: 'Program schedule and session materials.' },
+  {
+    label: 'Sessions',
+    slug: 'sessions',
+    description: 'Program schedule, dates, and locations.',
+  },
   // { label: 'Resources', slug: 'resources', description: 'Downloads, links, and reference docs.' },
 ] as const
 
