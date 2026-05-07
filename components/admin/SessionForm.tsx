@@ -35,6 +35,76 @@ const inputCls =
   'w-full border border-navy/20 rounded px-3 py-2 text-sm text-navy bg-white focus:outline-none focus:border-navy/50'
 const labelCls = 'font-mono text-xs tracking-widest text-navy/50 uppercase block mb-1'
 
+// ── Time select helpers ──────────────────────────────────────────────────────
+
+function buildTimeOptions(): { value: string; label: string }[] {
+  const opts: { value: string; label: string }[] = []
+  for (let mins = 6 * 60; mins <= 23 * 60; mins += 15) {
+    const h = Math.floor(mins / 60)
+    const m = mins % 60
+    const value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+    const period = h >= 12 ? 'PM' : 'AM'
+    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+    const label = `${h12}:${String(m).padStart(2, '0')} ${period}`
+    opts.push({ value, label })
+  }
+  return opts
+}
+
+const TIME_OPTIONS = buildTimeOptions()
+const PRESET_VALUES = new Set(TIME_OPTIONS.map((o) => o.value))
+
+function TimeSelect({
+  value,
+  onChange,
+  id,
+}: {
+  value: string
+  onChange: (v: string) => void
+  id?: string
+}) {
+  const initialCustom = !!value && !PRESET_VALUES.has(value)
+  const [isCustom, setIsCustom] = useState(initialCustom)
+
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (e.target.value === '__custom__') {
+      setIsCustom(true)
+      onChange('')
+    } else {
+      setIsCustom(false)
+      onChange(e.target.value)
+    }
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <select
+        id={id}
+        value={isCustom ? '__custom__' : value}
+        onChange={handleSelect}
+        className={inputCls}
+      >
+        <option value="">—</option>
+        {TIME_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+        <option value="__custom__">Custom…</option>
+      </select>
+      {isCustom && (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="HH:MM (e.g. 05:30)"
+          className={inputCls}
+        />
+      )}
+    </div>
+  )
+}
+
 export default function SessionForm({ orgSlug, orgId, session, orgSpeakers }: SessionFormProps) {
   const router = useRouter()
   const isEdit = !!session
@@ -213,22 +283,12 @@ export default function SessionForm({ orgSlug, orgId, session, orgSpeakers }: Se
       {/* Start + End time */}
       <div className="flex gap-4">
         <div className="flex-1">
-          <label className={labelCls}>Start time</label>
-          <input
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            className={inputCls}
-          />
+          <label className={labelCls} htmlFor="start-time">Start time</label>
+          <TimeSelect id="start-time" value={startTime} onChange={setStartTime} />
         </div>
         <div className="flex-1">
-          <label className={labelCls}>End time</label>
-          <input
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            className={inputCls}
-          />
+          <label className={labelCls} htmlFor="end-time">End time</label>
+          <TimeSelect id="end-time" value={endTime} onChange={setEndTime} />
         </div>
       </div>
 
